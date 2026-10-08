@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FULL SABOR | Menú Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --orange-main: #FF9800; 
+            --yellow-flame: #FFC107;
+            --wood-brown: #8D6E63;
+            --dark-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-bg); color: white; scroll-behavior: smooth; }
+        
+        /* Estilos inspirados en el logo y La Pasta */
+        .text-orange-fs { color: var(--orange-main); }
+        .bg-orange-fs { background-color: var(--orange-main); }
+        .border-orange-fs { border-color: var(--orange-main); }
+        
+        .category-nav {
+            position: sticky; top: 0; z-index: 40;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--wood-brown);
+        }
+        
+        .cat-item {
+            white-space: nowrap; padding: 12px 20px; font-weight: 600; font-size: 0.9rem;
+            color: #888; transition: 0.3s; cursor: pointer; border-bottom: 3px solid transparent;
+        }
+        .cat-item.active { color: var(--orange-main); border-bottom: 3px solid var(--orange-main); }
+
+        .menu-card {
+            background: var(--card-bg); border: 1px solid #333; border-radius: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .menu-card:active { transform: scale(0.97); }
+        
+        .wood-banner {
+            background: var(--wood-brown);
+            color: white; padding: 4px 12px; border-radius: 4px;
+            font-weight: 800; font-style: italic; text-transform: uppercase;
+        }
+
+        /* Ocultar scrollbar del nav */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .order-type-btn {
+            border: 2px solid #333; flex: 1; padding: 12px; border-radius: 12px;
+            text-align: center; font-weight: 600; transition: 0.3s;
+        }
+        .order-type-btn.active { border-color: var(--orange-main); background: rgba(255, 152, 0, 0.1); color: var(--orange-main); }
+    </style>
+</head>
+<body class="pb-32">
+
+    <!-- Hero / Logo Section -->
+    <header class="flex flex-col items-center py-8 bg-zinc-900 border-b border-zinc-800">
+        <!-- Reemplaza 'logo.jpg' con el nombre de tu archivo de imagen -->
+        <img src="logo.jpg" alt="Full Sabor Logo" class="h-40 w-auto mb-2 drop-shadow-2xl">
+        <p class="text-zinc-500 text-xs tracking-[0.3em] uppercase font-bold">Parrillas & Hamburguesas</p>
+    </header>
+
+    <!-- Navegación Estilo La Pasta -->
+    <nav class="category-nav no-scrollbar overflow-x-auto flex px-4" id="nav-container">
+        <!-- Dinámico -->
+    </nav>
+
+    <!-- Contenido del Menú -->
+    <main class="max-w-4xl mx-auto p-4 space-y-12" id="menu-sections">
+        <!-- Dinámico -->
+    </main>
+
+    <!-- Barra Inferior "Ver Pedido" -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 w-full p-4 z-50 bg-gradient-to-t from-black to-transparent hidden">
+        <button onclick="toggleCart()" class="max-w-md mx-auto w-full bg-orange-fs text-black font-black py-4 px-8 rounded-2xl flex justify-between items-center shadow-2xl transform hover:scale-105 transition-all">
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                VER MI PEDIDO
+            </span>
+            <span id="cart-badge" class="bg-black text-white px-3 py-1 rounded-full text-xs italic">0</span>
+        </button>
+    </div>
+
+    <!-- MODAL DEL CARRITO -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/95 z-[60] hidden flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-zinc-800">
+            <h2 class="text-2xl font-black text-orange-fs italic italic">MI COMANDA</h2>
+            <button onclick="toggleCart()" class="text-zinc-500 text-4xl">&times;</button>
+        </div>
+
+        <div id="cart-list" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Items del carrito -->
+        </div>
+
+        <!-- Footer del Carrito: Opciones de Entrega -->
+        <div class="p-6 bg-zinc-900 border-t border-zinc-800 space-y-4">
+            <div class="flex gap-3">
+                <div id="btn-pickup" onclick="setOrderType('Pickup')" class="order-type-btn active">🏃 Pickup</div>
+                <div id="btn-delivery" onclick="setOrderType('Delivery')" class="order-type-btn">🛵 Delivery</div>
+            </div>
+
+            <input id="client-name" type="text" placeholder="Tu Nombre" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-xl text-white outline-none focus:border-orange-fs">
+            
+            <div id="address-container" class="hidden">
+                <textarea id="client-address" placeholder="Dirección detallada y punto de referencia" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-xl text-white outline-none focus:border-orange-fs h-20"></textarea>
+            </div>
+
+            <div class="flex justify-between text-2xl font-black pt-2">
+                <span>TOTAL:</span>
+                <span class="text-orange-fs" id="cart-total">$0.00</span>
+            </div>
+
+            <button onclick="sendWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+                ENVIAR COMANDA POR WHATSAPP
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const WHATSAPP_NUMBER = "584146553914";
+        let orderType = "Pickup";
+        let cart = [];
+
+        const menuData = [
+            {
+                categoria: "Pollo Asado",
+                id: "pollo",
+                items: [
+                    { id: 1, nombre: "1 Pollo Entero", precio: 10, desc: "Incluye arepas, ensalada y queso" },
+                    { id: 2, nombre: "1/2 Pollo", precio: 6, desc: "Incluye arepas, ensalada y queso" },
+                    { id: 3, nombre: "1/4 Pollo", precio: 3.5, desc: "Incluye arepas, ensalada y queso" }
+                ]
+            },
+            {
+                categoria: "Panes",
+                id: "panes",
+                items: [
+                    { id: 4, nombre: "Choripan Sencillo", precio: 2, desc: "Carne / Pollo / Picante" },
+                    { id: 5, nombre: "Choripan Especial", precio: 2.5, desc: "Con extras especiales" },
+                    { id: 6, nombre: "Perrocaliente", precio: 1.5, desc: "El clásico" },
+                    { id: 7, nombre: "Salchiqueso", precio: 2, desc: "Especial de la casa" },
+                    { id: 8, nombre: "Pan con Proteína Sencillo", precio: 5, desc: "Carne o Pollo" },
+                    { id: 9, nombre: "Pan con Proteína Especial", precio: 6, desc: "Extra carga de sabor" }
+                ]
+            },
+            {
+                categoria: "Hamburguesas Jr",
+                id: "jr",
+                items: [
+                    { id: 10, nombre: "Junior Sencilla", precio: 2, desc: "Vegetales y salsas" },
+                    { id: 11, nombre: "Junior Especial", precio: 2.5, desc: "Huevo, queso y jamón" },
+                    { id: 12, nombre: "Junior Doble Carne", precio: 4, desc: "Para el doble de hambre" },
+                    { id: 13, nombre: "Junior Filet de Pollo", precio: 3.5, desc: "Filet seleccionado" }
+                ]
+            },
+            {
+                categoria: "Whoppers",
+                id: "whopper",
+                items: [
+                    { id: 14, nombre: "Whopper Choriburguer", precio: 5, desc: "Especialidad Full Sabor" },
+                    { id: 15, nombre: "Whopper Choriburguer Doble", precio: 8, desc: "Doble carne" },
+                    { id: 16, nombre: "Whopper Filet de Pollo", precio: 5, desc: "Crujiente y jugoso" },
+                    { id: 17, nombre: "Whopper Lomo de Aguja", precio: 6.5, desc: "Corte premium" },
+                    { id: 18, nombre: "Whopper Full Crispy", precio: 6, desc: "Máxima textura" },
+                    { id: 19, nombre: "Whopper Punta Trasera", precio: 8, desc: "Sabor parrillero" },
+                    { id: 20, nombre: "Super Whopper Doble Proteína", precio: 10, desc: "Tú eliges las proteínas" },
+                    { id: 21, nombre: "Full Especial Triple Proteína", precio: 15, desc: "La más grande" }
+                ]
+            },
+            {
+                categoria: "Salchipapas",
+                id: "salchipapas",
+                items: [
+                    { id: 22, nombre: "Salchipapa Sencilla", precio: 6, desc: "Papas y salchicha" },
+                    { id: 23, nombre: "Salchipapa con Proteína", precio: 10, desc: "Carne o Pollo extra" }
+                ]
+            },
+            {
+                categoria: "Arepas & Picadas",
+                id: "arepas",
+                items: [
+                    { id: 24, nombre: "Arepa de Chorizo", precio: 4, desc: "Relleno parrillero" },
+                    { id: 25, nombre: "Arepa Filet de Pollo", precio: 5, desc: "Pechuga a la plancha" },
+                    { id: 26, nombre: "Arepa Lomo de Aguja", precio: 6.5, desc: "Carne tierna" },
+                    { id: 27, nombre: "Arepa Punta Trasera", precio: 8, desc: "Calidad premium" },
+                    { id: 28, nombre: "Arepa de Pernil", precio: 6, desc: "Pernil jugoso" }
+                ]
+            },
+            {
+                categoria: "Promociones",
+                id: "promos",
+                items: [
+                    { id: 29, nombre: "Promo #1", precio: 10, desc: "4 Salchiquesos + papas + refresco 1.5lt" },
+                    { id: 30, nombre: "Promo #2", precio: 12, desc: "4 Choripanes + papas + refresco 1.5lt" },
+                    { id: 31, nombre: "Super Combo Full Sabor", precio: 12, desc: "10 Hamburguesas Junior + refresco 1.5lt" }
+                ]
+            }
+        ];
+
+        function render() {
+            const nav = document.getElementById('nav-container');
+            const sections = document.getElementById('menu-sections');
+            
+            menuData.forEach((cat, idx) => {
+                // Nav
+                const navBtn = document.createElement('div');
+                navBtn.className = `cat-item ${idx === 0 ? 'active' : ''}`;
+                navBtn.innerText = cat.categoria;
+                navBtn.onclick = () => {
+                    document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active'));
+                    navBtn.classList.add('active');
+                    document.getElementById(cat.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                nav.appendChild(navBtn);
+
+                // Section
+                let html = `
+                    <section id="${cat.id}">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="wood-banner">${cat.categoria}</span>
+                            <div class="h-[2px] bg-zinc-800 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                `;
+
+                cat.items.forEach(item => {
+                    html += `
+                        <div class="menu-card p-5 flex justify-between items-center">
+                            <div class="flex-1 pr-4">
+                                <h3 class="font-bold text-lg leading-tight mb-1">${item.nombre}</h3>
+                                <p class="text-zinc-500 text-xs mb-3 italic">${item.desc}</p>
+                                <span class="text-orange-fs font-black text-xl italic">$${item.precio.toFixed(2)}</span>
+                            </div>
+                            <button onclick="addToCart(${item.id})" class="bg-zinc-800 text-orange-fs p-4 rounded-2xl hover:bg-orange-fs hover:text-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                });
+                html += `</div></section>`;
+                sections.innerHTML += html;
+            });
+        }
+
+        function addToCart(id) {
+            let found;
+            menuData.forEach(c => c.items.forEach(i => { if(i.id === id) found = {...i}; }));
+            cart.push({...found, cartId: Date.now(), note: ""});
+            updateUI();
+            document.getElementById('cart-bar').classList.remove('hidden');
+        }
+
+        function updateUI() {
+            document.getElementById('cart-badge').innerText = cart.length;
+            const list = document.getElementById('cart-list');
+            const totalDisplay = document.getElementById('cart-total');
+            let total = 0;
+
+            list.innerHTML = cart.map((item, index) => {
+                total += item.precio;
+                return `
+                    <div class="bg-zinc-800/50 p-4 rounded-2xl border-l-4 border-orange-fs">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold">${item.nombre}</h4>
+                                <span class="text-orange-fs font-bold text-sm">$${item.precio.toFixed(2)}</span>
+                            </div>
+                            <button onclick="remove(${index})" class="text-zinc-600">&times;</button>
+                        </div>
+                        <input type="text" placeholder="Nota: Sin cebolla, etc..." 
+                               onchange="updateNote(${index}, this.value)" value="${item.note}"
+                               class="w-full bg-black/30 border border-zinc-700 text-xs p-2 rounded-lg text-zinc-400 outline-none focus:border-orange-fs">
+                    </div>
+                `;
+            }).join('');
+            totalDisplay.innerText = `$${total.toFixed(2)}`;
+            if(cart.length === 0) {
+                document.getElementById('cart-bar').classList.add('hidden');
+                toggleCart();
+            }
+        }
+
+        function updateNote(idx, val) { cart[idx].note = val; }
+        function remove(idx) { cart.splice(idx, 1); updateUI(); }
+        function toggleCart() { 
+            const m = document.getElementById('cart-modal');
+            m.classList.toggle('hidden');
+            document.body.style.overflow = m.classList.contains('hidden') ? 'auto' : 'hidden';
+        }
+
+        function setOrderType(type) {
+            orderType = type;
+            document.getElementById('btn-pickup').className = `order-type-btn ${type === 'Pickup' ? 'active' : ''}`;
+            document.getElementById('btn-delivery').className = `order-type-btn ${type === 'Delivery' ? 'active' : ''}`;
+            document.getElementById('address-container').classList.toggle('hidden', type === 'Pickup');
+        }
+
+        function sendWhatsApp() {
+            const name = document.getElementById('client-name').value;
+            const addr = document.getElementById('client-address').value;
+            if(!name) return alert("Por favor, ingresa tu nombre");
+            if(orderType === 'Delivery' && !addr) return alert("Por favor, ingresa la dirección");
+
+            let msg = `🔥 *COMANDA: FULL SABOR* 🔥\n`;
+            msg += `👤 *CLIENTE:* ${name}\n`;
+            msg += `📍 *SERVICIO:* ${orderType.toUpperCase()}\n`;
+            if(orderType === 'Delivery') msg += `🏠 *DIRECCIÓN:* ${addr}\n`;
+            msg += `─────────────────────\n`;
+            
+            let total = 0;
+            cart.forEach((item, i) => {
+                msg += `${i+1}. *${item.nombre}* ($${item.precio})\n`;
+                if(item.note) msg += `   └ _Nota: ${item.note}_\n`;
+                total += item.precio;
+            });
+            
+            msg += `─────────────────────\n`;
+            msg += `💰 *TOTAL A PAGAR: $${total.toFixed(2)}*\n\n`;
+            msg += `_Enviado desde el Menú Digital_`;
+
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`);
+        }
+
+        render();
+    </script>
+</body>
+</html>
